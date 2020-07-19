@@ -28,17 +28,44 @@ using GLib;
 public class Vala.DelegateType : CallableType {
 	public weak Delegate delegate_symbol {
 		get {
+			if (marker && symbol != null) {
+				stderr.printf("[*%p] delegate_symbol name: %s, type: %s ", &(this.marker), symbol.name, Type.from_instance(symbol).name());
+				print_symbol_addr();
+				stderr.printf("constr del name %s, type: %s, address %p\n", del.name, Type.from_instance(del).name(), &del);
+			}
 			return (Delegate) symbol;
 		}
 	}
 
 	public bool is_called_once { get; set; }
+	public bool is_anonymous { get; private set; }
 
 	DelegateTargetField? target_field;
 	DelegateDestroyField? destroy_field;
 
+	/*
+	 * TODO: Something weird is going on here... Without this variable `symbol`
+	 * (and hence `delegate_symbol`) suddenly change type from ValaDelegate to ValaLocalVariable.
+	 * Maybe the symbol of type ValaDelegate is discarded because of its weak reference and
+	 * memory for a new one of type ValaLocalVariable is allocated at the exact same address?
+	 */
+	Delegate del;
+
+	public DelegateType.anonymous (Delegate delegate_symbol) {
+		if (delegate_symbol!= null) {
+			stderr.printf("constr anonymous delegate_symbol name %s, type: %s\n", delegate_symbol.name, Type.from_instance(delegate_symbol).name());
+		}
+		this (delegate_symbol);
+		this.is_anonymous = true;
+
+		//DEBUG
+		this.marker=true;
+		this.delegate_symbol; 
+	}
+
 	public DelegateType (Delegate delegate_symbol) {
 		base (delegate_symbol);
+		del = delegate_symbol;
 		this.is_called_once = (delegate_symbol.get_attribute_string ("CCode", "scope") == "async");
 	}
 
@@ -90,9 +117,22 @@ public class Vala.DelegateType : CallableType {
 		return delegate_symbol.is_accessible (sym);
 	}
 
+
+	public override void accept (CodeVisitor visitor) {
+		base.accept (visitor);
+
+		if (is_anonymous) {
+			delegate_symbol.accept (visitor);
+		}
+	}
+
 	public override bool check (CodeContext context) {
 		if (is_called_once && !value_owned) {
 			Report.warning (source_reference, "delegates with scope=\"async\" must be owned");
+		}
+
+		if (marker) {
+			stderr.printf("Checking delegate symbol: symbol type: %s\n", Type.from_instance(symbol).name());
 		}
 
 		if (!delegate_symbol.check (context)) {

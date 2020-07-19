@@ -29,6 +29,8 @@ using GLib;
  * expressions.
  */
 public abstract class Vala.DataType : CodeNode {
+	public bool marker = false;
+
 	/**
 	 * Specifies that the expression or variable owns the value.
 	 */
@@ -39,10 +41,23 @@ public abstract class Vala.DataType : CodeNode {
 	 */
 	public bool nullable { get; set; }
 
+	private weak Symbol? _symbol;
 	/**
 	 * The referred symbol.
 	 */
-	public weak Symbol? symbol { get; private set; }
+	/*public weak Symbol? symbol { 
+		get { if (marker) stderr.printf("Getting symbol\n"); return _symbol;}
+		private set { if (marker) stderr.printf("Setting symbol\n"); _symbol = value; }
+	}*/
+
+	public weak Symbol? symbol { 
+		get { return _symbol;}
+		private set { _symbol = value; }
+	}
+
+	public void print_symbol_addr() {
+		stderr.printf("*symbol: %p\n", &_symbol);
+	}
 
 	/**
 	 * The referred type symbol.
@@ -67,6 +82,7 @@ public abstract class Vala.DataType : CodeNode {
 	private static List<DataType> _empty_type_list;
 
 	protected DataType.with_symbol (Symbol? symbol) {
+		//stderr.printf("DataType.with_symbol: %s\n", symbol != null ? symbol.name : "null");
 		this.symbol = symbol;
 	}
 
@@ -114,6 +130,9 @@ public abstract class Vala.DataType : CodeNode {
 	}
 
 	public override void accept (CodeVisitor visitor) {
+		if (SymbolResolver.debug && visitor is SymbolResolver && this is DelegateType) {
+			stderr.printf("Accepting symbol resolver on datatype %s\n", symbol.name);
+		}
 		visitor.visit_data_type (this);
 	}
 

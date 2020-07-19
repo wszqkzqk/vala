@@ -474,7 +474,19 @@ public class Vala.Parser : CodeVisitor {
 		return result;
 	}
 
-	DataType parse_type (bool owned_by_default, bool can_weak_ref, bool require_unowned = false) throws ParseError {
+	DataType parse_type (bool owned_by_default, bool can_weak_ref, bool require_unowned = false, Symbol? parent=null) throws ParseError {
+		var type_loc = get_location ();
+		if (!accept (TokenType.DELEGATE)) {
+			rollback (type_loc);
+			return parse_type2(owned_by_default, can_weak_ref, require_unowned);
+		} else {
+			stderr.printf("parse delegate");
+			rollback (type_loc);
+			return parse_anonymous_delegate (parent);
+		}
+	}
+
+	DataType parse_type2 (bool owned_by_default, bool can_weak_ref, bool require_unowned = false) throws ParseError {
 		var begin = get_location ();
 
 		bool is_dynamic = accept (TokenType.DYNAMIC);
@@ -2935,6 +2947,7 @@ public class Vala.Parser : CodeVisitor {
 		var flags = parse_member_declaration_modifiers ();
 		var type = parse_type (true, false);
 		var sym = parse_symbol_name ();
+		//stdout.printf("%s\n", sym.name);
 		var type_param_list = parse_type_parameter_list ();
 		var method = new Method (sym.name, type, get_src (begin), comment);
 		if (sym.inner != null) {
@@ -2994,7 +3007,7 @@ public class Vala.Parser : CodeVisitor {
 		expect (TokenType.OPEN_PARENS);
 		if (current () != TokenType.CLOSE_PARENS) {
 			do {
-				var param = parse_parameter ();
+				var param = parse_parameter (parent);
 				method.add_parameter (param);
 			} while (accept (TokenType.COMMA));
 		}
@@ -3524,7 +3537,7 @@ public class Vala.Parser : CodeVisitor {
 		}
 	}
 
-	Parameter parse_parameter () throws ParseError {
+	Parameter parse_parameter (Symbol? parent=null) throws ParseError {
 		var attrs = parse_attributes ();
 		var begin = get_location ();
 		if (accept (TokenType.ELLIPSIS)) {
@@ -3542,13 +3555,13 @@ public class Vala.Parser : CodeVisitor {
 		DataType type;
 		if (direction == ParameterDirection.IN) {
 			// in parameters are unowned by default
-			type = parse_type (false, false);
+			type = parse_type (false, false, false, parent);
 		} else if (direction == ParameterDirection.REF) {
 			// ref parameters own the value by default
-			type = parse_type (true, true);
+			type = parse_type (true, true, false, parent);
 		} else {
 			// out parameters own the value by default
-			type = parse_type (true, false);
+			type = parse_type (true, false, false, parent);
 		}
 		string id = parse_identifier ();
 
@@ -3682,6 +3695,91 @@ public class Vala.Parser : CodeVisitor {
 			}
 			result = next;
 		}
+	}
+
+	DelegateType parse_anonymous_delegate (Symbol? parent) throws ParseError { //(Symbol parent, List<Attribute>? attrs) throws ParseError {
+		if (parent == null) {
+			throw new ParseError.SYNTAX ("anonymous delegate: parent==null");
+		}
+		var begin = get_location ();
+		//var access = parse_access_modifier ();
+		//var flags = parse_member_declaration_modifiers ();
+		expect (TokenType.DELEGATE);
+		/*if (ModifierFlags.NEW in flags) {
+			throw new ParseError.SYNTAX ("`new' modifier not allowed on delegates");
+		}*/
+		//var type = parse_type (true, false);
+		//var sym = parse_symbol_name ();
+		var type_param_list = parse_type_parameter_list ();
+
+		expect (TokenType.OPEN_PARENS);
+		var param_list = new ArrayList<Parameter>();
+		if (current () != TokenType.CLOSE_PARENS) {
+			do {
+				var param = parse_parameter ();
+				param_list.add (param);
+			} while (accept (TokenType.COMMA));
+		}
+		expect (TokenType.CLOSE_PARENS);
+
+		DataType error_type = null;
+		if (accept (TokenType.THROWS)) {
+			do {
+				error_type = parse_type (true, false);
+			} while (accept (TokenType.COMMA));
+		}
+
+		expect (TokenType.LAMBDA);
+		var type = parse_type (true, false);
+
+		var d = new Delegate ("oma123", type, get_src (begin), comment);
+		/*d.access = access;
+		set_attributes (d, attrs);
+		if (ModifierFlags.STATIC in flags) {
+			if (!context.deprecated) {
+				// TODO enable warning in future releases
+				Report.warning (get_last_src (), "deprecated syntax, use [CCode (has_target = false)]");
+			}
+			d.has_target = false;
+		}
+		if (ModifierFlags.EXTERN in flags) {
+			d.is_extern = true;
+		}
+		if (!d.get_attribute_bool ("CCode", "has_typedef", true)) {
+			if (!d.external) {
+				Report.error (get_last_src (), "Delegates without definition must be external");
+			}
+			d.anonymous = true;
+		}*/
+		foreach (var type_param in type_param_list) {
+			d.add_type_parameter (type_param);
+		}
+
+		foreach (var param in param_list) {
+			d.add_parameter (param);
+		}
+
+		if (error_type != null) {
+			d.add_error_type (error_type);
+		}
+
+		parent.scope.add(null, d);
+		return new DelegateType.anonymous(d);
+		
+		//expect (TokenType.SEMICOLON);
+
+		/*Symbol result = d;
+		while (sym != null) {
+			sym = sym.inner;
+
+			Symbol next = (sym != null ? new Namespace (sym.name, d.source_reference) : parent);
+			if (result is Namespace) {
+				next.add_namespace ((Namespace) result);
+			} else {
+				next.add_delegate ((Delegate) result);
+			}
+			result = next;
+		}*/
 	}
 
 	List<TypeParameter> parse_type_parameter_list () throws ParseError {

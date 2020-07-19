@@ -273,6 +273,9 @@ public class Vala.Method : Subroutine, Callable {
 		}
 
 		foreach (Parameter param in parameters) {
+			if (SymbolResolver.debug && visitor is SymbolResolver) {
+				stderr.printf("Visiting params on method %s\n", name);
+			}
 			param.accept (visitor);
 		}
 
