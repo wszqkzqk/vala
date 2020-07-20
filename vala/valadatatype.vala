@@ -29,8 +29,6 @@ using GLib;
  * expressions.
  */
 public abstract class Vala.DataType : CodeNode {
-	public bool marker = false;
-
 	/**
 	 * Specifies that the expression or variable owns the value.
 	 */
@@ -116,9 +114,6 @@ public abstract class Vala.DataType : CodeNode {
 	}
 
 	public override void accept (CodeVisitor visitor) {
-		if (SymbolResolver.debug && visitor is SymbolResolver && this is DelegateType) {
-			stderr.printf("Accepting symbol resolver on datatype %s\n", symbol.name);
-		}
 		visitor.visit_data_type (this);
 	}
 

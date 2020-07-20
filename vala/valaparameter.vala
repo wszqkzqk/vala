@@ -81,17 +81,10 @@ public class Vala.Parameter : Variable {
 	}
 
 	public override void accept (CodeVisitor visitor) {
-		if (SymbolResolver.debug && visitor is SymbolResolver) {
-			stderr.printf("Accepting symbol resolver on param %s\n", name);
-		}
 		visitor.visit_formal_parameter (this);
 	}
 
 	public override void accept_children (CodeVisitor visitor) {
-		if (SymbolResolver.debug && visitor is SymbolResolver) {
-			stderr.printf("Accepting symbol resolver on param children %s\n", name);
-		}
-
 		if (!ellipsis) {
 			variable_type.accept (visitor);
 
@@ -152,9 +145,6 @@ public class Vala.Parameter : Variable {
 				error = true;
 				Report.error (source_reference, "'void' not supported as parameter type");
 				return false;
-			}
-			if (name == "abc") {
-				stderr.printf("Checking param name: %s, type: %s\n", name, Type.from_instance(variable_type).name());
 			}
 			variable_type.check (context);
 		}

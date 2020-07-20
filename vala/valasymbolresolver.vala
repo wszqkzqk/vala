@@ -28,8 +28,6 @@ using GLib;
  * Code visitor resolving symbol names.
  */
 public class Vala.SymbolResolver : CodeVisitor {
-	public static bool debug = false;
-
 	Symbol root_symbol;
 	Scope current_scope;
 
@@ -156,11 +154,6 @@ public class Vala.SymbolResolver : CodeVisitor {
 			return;
 		}
 
-		if (cb.name == "oma123") {
-			stderr.printf("@oma123\n");
-			debug = true;
-		}
-
 		current_scope = cb.scope;
 
 		cb.accept_children (this);
@@ -199,11 +192,6 @@ public class Vala.SymbolResolver : CodeVisitor {
 	public override void visit_method (Method m) {
 		if (m.checked) {
 			return;
-		}
-
-		if (m.name == "f") {
-			stderr.printf("@f\n");
-			debug = true;
 		}
 
 		current_scope = m.scope;
@@ -282,14 +270,6 @@ public class Vala.SymbolResolver : CodeVisitor {
 	}
 
 	private Symbol? resolve_symbol (UnresolvedSymbol unresolved_symbol) {
-		var sym = resolve_symbol2(unresolved_symbol);
-		if (sym==null) {
-			stderr.printf("Could not find symbol: name: %s, type: %s\n", unresolved_symbol.name, Type.from_instance(unresolved_symbol).name());
-		}
-		return sym;
-	}
-
-	private Symbol? resolve_symbol2 (UnresolvedSymbol unresolved_symbol) {
 		if (unresolved_symbol.qualified) {
 			// qualified access to global symbol
 			return root_symbol.scope.lookup (unresolved_symbol.name);
@@ -297,14 +277,6 @@ public class Vala.SymbolResolver : CodeVisitor {
 			Symbol sym = null;
 			Scope scope = current_scope;
 			while (sym == null && scope != null) {
-				if (debug) {
-					stderr.printf("scope: ");
-					foreach (var k in scope.get_symbol_table().get_keys()) {
-						stderr.printf("%s ", k);
-					}
-					stderr.printf("\n");
-				}
-
 				sym = scope.lookup (unresolved_symbol.name);
 
 				// only look for types and type containers
@@ -519,11 +491,6 @@ public class Vala.SymbolResolver : CodeVisitor {
 	}
 
 	public override void visit_data_type (DataType data_type) {
-		if (SymbolResolver.debug) {
-			var name = (data_type is UnresolvedType) ? ((UnresolvedType) data_type).unresolved_symbol.name : "<unknown>";
-			stderr.printf("SymbolResolver: Visit data type %s, name %s\n", Type.from_instance(data_type).name(), name);
-		}
-
 		data_type.accept_children (this);
 
 		if (!(data_type is UnresolvedType)) {
@@ -532,13 +499,8 @@ public class Vala.SymbolResolver : CodeVisitor {
 
 		var unresolved_type = (UnresolvedType) data_type;
 
-		var rt = resolve_type (unresolved_type);
-		if (SymbolResolver.debug) {
-			stderr.printf("SymbolResolver: resolved %s by %s\n", Type.from_instance(unresolved_type).name(), Type.from_instance(rt).name());
+		unresolved_type.parent_node.replace_type (unresolved_type, resolve_type (unresolved_type));
 		}
-
-		unresolved_type.parent_node.replace_type (unresolved_type, rt);
-	}
 
 	public override void visit_declaration_statement (DeclarationStatement stmt) {
 		if (stmt.checked) {

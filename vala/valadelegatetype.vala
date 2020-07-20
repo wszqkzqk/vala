@@ -28,11 +28,6 @@ using GLib;
 public class Vala.DelegateType : CallableType {
 	public weak Delegate delegate_symbol {
 		get {
-			if (marker && symbol != null) {
-				var del = delegate_symbol_ref;
-				stderr.printf("[*%p] delegate_symbol name: %s, type: %s ", &(this.marker), symbol.name, Type.from_instance(symbol).name());
-				stderr.printf("constr del name %s, type: %s, address %p\n", del.name, Type.from_instance(del).name(), &del);
-			}
 			return (Delegate) symbol;
 		}
 	}
@@ -57,10 +52,6 @@ public class Vala.DelegateType : CallableType {
 		}
 		this (delegate_symbol);
 		this.is_anonymous = true;
-
-		//DEBUG
-		this.marker=true;
-		this.delegate_symbol; 
 	}
 
 	public DelegateType (Delegate delegate_symbol) {
@@ -129,10 +120,6 @@ public class Vala.DelegateType : CallableType {
 	public override bool check (CodeContext context) {
 		if (is_called_once && !value_owned) {
 			Report.warning (source_reference, "delegates with scope=\"async\" must be owned");
-		}
-
-		if (marker) {
-			stderr.printf("Checking delegate symbol: symbol type: %s\n", Type.from_instance(symbol).name());
 		}
 
 		if (!delegate_symbol.check (context)) {
