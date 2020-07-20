@@ -474,20 +474,20 @@ public class Vala.Parser : CodeVisitor {
 		return result;
 	}
 
-	DataType parse_type (bool owned_by_default, bool can_weak_ref, bool require_unowned = false, Symbol? parent=null) throws ParseError {
-		var type_loc = get_location ();
-		if (!accept (TokenType.DELEGATE)) {
-			rollback (type_loc);
-			return parse_type2(owned_by_default, can_weak_ref, require_unowned);
-		} else {
-			stderr.printf("parse delegate");
-			rollback (type_loc);
-			return parse_anonymous_delegate (parent);
-		}
+	DataType parse_type_with_parent (bool owned_by_default, bool can_weak_ref, Symbol? parent) throws ParseError {
+		return parse_type(owned_by_default, can_weak_ref, false, parent);
 	}
 
-	DataType parse_type2 (bool owned_by_default, bool can_weak_ref, bool require_unowned = false) throws ParseError {
+	DataType parse_type (bool owned_by_default, bool can_weak_ref, bool require_unowned = false, Symbol? parent=null) throws ParseError {
 		var begin = get_location ();
+
+		// TODO: Can anonymous delegates be unowned or weak?
+		if (accept (TokenType.DELEGATE)) {
+			rollback (begin);
+			return parse_anonymous_delegate (parent);
+		} else {
+			rollback (begin);
+		}
 
 		bool is_dynamic = accept (TokenType.DYNAMIC);
 
@@ -3554,13 +3554,13 @@ public class Vala.Parser : CodeVisitor {
 		DataType type;
 		if (direction == ParameterDirection.IN) {
 			// in parameters are unowned by default
-			type = parse_type (false, false, false, parent);
+			type = parse_type_with_parent (false, false, parent);
 		} else if (direction == ParameterDirection.REF) {
 			// ref parameters own the value by default
-			type = parse_type (true, true, false, parent);
+			type = parse_type_with_parent (true, true, parent);
 		} else {
 			// out parameters own the value by default
-			type = parse_type (true, false, false, parent);
+			type = parse_type_with_parent (true, false, parent);
 		}
 		string id = parse_identifier ();
 

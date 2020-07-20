@@ -29,6 +29,7 @@ public class Vala.DelegateType : CallableType {
 	public weak Delegate delegate_symbol {
 		get {
 			if (marker && symbol != null) {
+				var del = delegate_symbol_ref;
 				stderr.printf("[*%p] delegate_symbol name: %s, type: %s ", &(this.marker), symbol.name, Type.from_instance(symbol).name());
 				stderr.printf("constr del name %s, type: %s, address %p\n", del.name, Type.from_instance(del).name(), &del);
 			}
@@ -48,7 +49,7 @@ public class Vala.DelegateType : CallableType {
 	 * Maybe the symbol of type ValaDelegate is discarded because of its weak reference and
 	 * memory for a new one of type ValaLocalVariable is allocated at the exact same address?
 	 */
-	Delegate del;
+	Delegate delegate_symbol_ref;
 
 	public DelegateType.anonymous (Delegate delegate_symbol) {
 		if (delegate_symbol!= null) {
@@ -64,7 +65,7 @@ public class Vala.DelegateType : CallableType {
 
 	public DelegateType (Delegate delegate_symbol) {
 		base (delegate_symbol);
-		del = delegate_symbol;
+		delegate_symbol_ref = delegate_symbol;
 		this.is_called_once = (delegate_symbol.get_attribute_string ("CCode", "scope") == "async");
 	}
 
