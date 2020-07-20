@@ -41,23 +41,10 @@ public abstract class Vala.DataType : CodeNode {
 	 */
 	public bool nullable { get; set; }
 
-	private weak Symbol? _symbol;
 	/**
 	 * The referred symbol.
 	 */
-	/*public weak Symbol? symbol { 
-		get { if (marker) stderr.printf("Getting symbol\n"); return _symbol;}
-		private set { if (marker) stderr.printf("Setting symbol\n"); _symbol = value; }
-	}*/
-
-	public weak Symbol? symbol { 
-		get { return _symbol;}
-		private set { _symbol = value; }
-	}
-
-	public void print_symbol_addr() {
-		stderr.printf("*symbol: %p\n", &_symbol);
-	}
+	public weak Symbol? symbol { get; private set; }
 
 	/**
 	 * The referred type symbol.
@@ -82,7 +69,6 @@ public abstract class Vala.DataType : CodeNode {
 	private static List<DataType> _empty_type_list;
 
 	protected DataType.with_symbol (Symbol? symbol) {
-		//stderr.printf("DataType.with_symbol: %s\n", symbol != null ? symbol.name : "null");
 		this.symbol = symbol;
 	}
 

@@ -168,23 +168,6 @@ public class Vala.SymbolResolver : CodeVisitor {
 		current_scope = current_scope.parent_scope;
 	}
 
-	public override void visit_anonymous_delegate (Delegate cb) {
-		if (cb.checked) {
-			return;
-		}
-
-		if (cb.name == "oma123") {
-			stderr.printf("@oma123 (anonymous)\n");
-			debug = true;
-		}
-
-		current_scope = cb.scope;
-
-		cb.accept_children (this);
-
-		current_scope = current_scope.parent_scope;
-	}
-
 	public override void visit_constant (Constant c) {
 		if (c.checked) {
 			return;
@@ -300,9 +283,6 @@ public class Vala.SymbolResolver : CodeVisitor {
 
 	private Symbol? resolve_symbol (UnresolvedSymbol unresolved_symbol) {
 		var sym = resolve_symbol2(unresolved_symbol);
-		if (false) { //(sym.name==null) {
-			stderr.printf("resolve symbol: %s, type: %s\n", sym.name, Type.from_instance(sym).name());
-		}
 		if (sym==null) {
 			stderr.printf("Could not find symbol: name: %s, type: %s\n", unresolved_symbol.name, Type.from_instance(unresolved_symbol).name());
 		}

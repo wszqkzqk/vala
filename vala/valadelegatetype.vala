@@ -30,7 +30,6 @@ public class Vala.DelegateType : CallableType {
 		get {
 			if (marker && symbol != null) {
 				stderr.printf("[*%p] delegate_symbol name: %s, type: %s ", &(this.marker), symbol.name, Type.from_instance(symbol).name());
-				print_symbol_addr();
 				stderr.printf("constr del name %s, type: %s, address %p\n", del.name, Type.from_instance(del).name(), &del);
 			}
 			return (Delegate) symbol;

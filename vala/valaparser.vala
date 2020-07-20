@@ -2947,7 +2947,6 @@ public class Vala.Parser : CodeVisitor {
 		var flags = parse_member_declaration_modifiers ();
 		var type = parse_type (true, false);
 		var sym = parse_symbol_name ();
-		//stdout.printf("%s\n", sym.name);
 		var type_param_list = parse_type_parameter_list ();
 		var method = new Method (sym.name, type, get_src (begin), comment);
 		if (sym.inner != null) {
@@ -3701,15 +3700,9 @@ public class Vala.Parser : CodeVisitor {
 		if (parent == null) {
 			throw new ParseError.SYNTAX ("anonymous delegate: parent==null");
 		}
+
 		var begin = get_location ();
-		//var access = parse_access_modifier ();
-		//var flags = parse_member_declaration_modifiers ();
 		expect (TokenType.DELEGATE);
-		/*if (ModifierFlags.NEW in flags) {
-			throw new ParseError.SYNTAX ("`new' modifier not allowed on delegates");
-		}*/
-		//var type = parse_type (true, false);
-		//var sym = parse_symbol_name ();
 		var type_param_list = parse_type_parameter_list ();
 
 		expect (TokenType.OPEN_PARENS);
@@ -3732,25 +3725,9 @@ public class Vala.Parser : CodeVisitor {
 		expect (TokenType.LAMBDA);
 		var type = parse_type (true, false);
 
+		// TODO: Get rid of hardcoded name, it should be anonymous
 		var d = new Delegate ("oma123", type, get_src (begin), comment);
-		/*d.access = access;
-		set_attributes (d, attrs);
-		if (ModifierFlags.STATIC in flags) {
-			if (!context.deprecated) {
-				// TODO enable warning in future releases
-				Report.warning (get_last_src (), "deprecated syntax, use [CCode (has_target = false)]");
-			}
-			d.has_target = false;
-		}
-		if (ModifierFlags.EXTERN in flags) {
-			d.is_extern = true;
-		}
-		if (!d.get_attribute_bool ("CCode", "has_typedef", true)) {
-			if (!d.external) {
-				Report.error (get_last_src (), "Delegates without definition must be external");
-			}
-			d.anonymous = true;
-		}*/
+		
 		foreach (var type_param in type_param_list) {
 			d.add_type_parameter (type_param);
 		}
@@ -3765,21 +3742,6 @@ public class Vala.Parser : CodeVisitor {
 
 		parent.scope.add(null, d);
 		return new DelegateType.anonymous(d);
-		
-		//expect (TokenType.SEMICOLON);
-
-		/*Symbol result = d;
-		while (sym != null) {
-			sym = sym.inner;
-
-			Symbol next = (sym != null ? new Namespace (sym.name, d.source_reference) : parent);
-			if (result is Namespace) {
-				next.add_namespace ((Namespace) result);
-			} else {
-				next.add_delegate ((Delegate) result);
-			}
-			result = next;
-		}*/
 	}
 
 	List<TypeParameter> parse_type_parameter_list () throws ParseError {

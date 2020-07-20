@@ -109,14 +109,6 @@ public abstract class Vala.CodeVisitor {
 	}
 
 	/**
-	 * Visit operation called for delegates.
-	 *
-	 * @param d a delegate
-	 */
-	public virtual void visit_anonymous_delegate (Delegate d) {
-	}
-
-	/**
 	 * Visit operation called for constants.
 	 *
 	 * @param c a constant
