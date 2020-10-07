@@ -3762,6 +3762,7 @@ public class Vala.Parser : CodeVisitor {
 
 		var d = new Delegate ("__delegate%i_".printf (next_anonymous_id++), type, get_src (begin), comment);
 		d.anonymous = true;
+		//FIXME d.access = parent.access;
 
 		foreach (var type_param in type_param_list) {
 			d.add_type_parameter (type_param);
