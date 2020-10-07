@@ -3698,6 +3698,38 @@ public class Vala.Parser : CodeVisitor {
 
 	static int next_anonymous_id = 0;
 
+	Parameter parse_anonymous_parameter (int id) throws ParseError {
+		var attrs = parse_attributes ();
+		var begin = get_location ();
+		bool params_array = accept (TokenType.PARAMS);
+		var direction = ParameterDirection.IN;
+		if (accept (TokenType.OUT)) {
+			direction = ParameterDirection.OUT;
+		} else if (accept (TokenType.REF)) {
+			direction = ParameterDirection.REF;
+		}
+
+		DataType type;
+		if (direction == ParameterDirection.IN) {
+			// in parameters are unowned by default
+			type = parse_type (false, false);
+		} else if (direction == ParameterDirection.REF) {
+			// ref parameters own the value by default
+			type = parse_type (true, true);
+		} else {
+			// out parameters own the value by default
+			type = parse_type (true, false);
+		}
+
+		type = parse_inline_array_type (type);
+
+		var param = new Parameter ("p%i".printf (id), type, get_src (begin));
+		set_attributes (param, attrs);
+		param.direction = direction;
+		param.params_array = params_array;
+		return param;
+	}
+
 	DelegateType parse_anonymous_delegate (Symbol? parent) throws ParseError { //(Symbol parent, List<Attribute>? attrs) throws ParseError {
 		if (parent == null) {
 			throw new ParseError.SYNTAX ("anonymous delegate: parent==null");
@@ -3710,8 +3742,9 @@ public class Vala.Parser : CodeVisitor {
 		expect (TokenType.OPEN_PARENS);
 		var param_list = new ArrayList<Parameter>();
 		if (current () != TokenType.CLOSE_PARENS) {
+			int next_parameter_id = 0;
 			do {
-				var param = parse_parameter ();
+				var param = parse_anonymous_parameter (next_parameter_id++);
 				param_list.add (param);
 			} while (accept (TokenType.COMMA));
 		}
