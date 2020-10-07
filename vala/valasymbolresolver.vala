@@ -500,7 +500,7 @@ public class Vala.SymbolResolver : CodeVisitor {
 		var unresolved_type = (UnresolvedType) data_type;
 
 		unresolved_type.parent_node.replace_type (unresolved_type, resolve_type (unresolved_type));
-		}
+	}
 
 	public override void visit_declaration_statement (DeclarationStatement stmt) {
 		if (stmt.checked) {
