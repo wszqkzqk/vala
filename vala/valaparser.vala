@@ -3696,6 +3696,8 @@ public class Vala.Parser : CodeVisitor {
 		}
 	}
 
+	static int next_anonymous_id = 0;
+
 	DelegateType parse_anonymous_delegate (Symbol? parent) throws ParseError { //(Symbol parent, List<Attribute>? attrs) throws ParseError {
 		if (parent == null) {
 			throw new ParseError.SYNTAX ("anonymous delegate: parent==null");
@@ -3725,10 +3727,9 @@ public class Vala.Parser : CodeVisitor {
 		expect (TokenType.LAMBDA);
 		var type = parse_type (true, false);
 
-		// TODO: Get rid of hardcoded name, it should be anonymous
-		var d = new Delegate ("oma123", type, get_src (begin), comment);
+		var d = new Delegate ("__delegate%i_".printf (next_anonymous_id++), type, get_src (begin), comment);
 		d.anonymous = true;
-		
+
 		foreach (var type_param in type_param_list) {
 			d.add_type_parameter (type_param);
 		}
@@ -3741,7 +3742,7 @@ public class Vala.Parser : CodeVisitor {
 			d.add_error_type (error_type);
 		}
 
-		parent.scope.add(null, d);
+		parent.add_delegate (d);
 		return new DelegateType (d);
 	}
 
