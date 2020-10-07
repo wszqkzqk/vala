@@ -3727,6 +3727,7 @@ public class Vala.Parser : CodeVisitor {
 
 		// TODO: Get rid of hardcoded name, it should be anonymous
 		var d = new Delegate ("oma123", type, get_src (begin), comment);
+		d.anonymous = true;
 		
 		foreach (var type_param in type_param_list) {
 			d.add_type_parameter (type_param);
@@ -3741,7 +3742,7 @@ public class Vala.Parser : CodeVisitor {
 		}
 
 		parent.scope.add(null, d);
-		return new DelegateType.anonymous(d);
+		return new DelegateType (d);
 	}
 
 	List<TypeParameter> parse_type_parameter_list () throws ParseError {

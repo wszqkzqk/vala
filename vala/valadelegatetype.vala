@@ -33,30 +33,12 @@ public class Vala.DelegateType : CallableType {
 	}
 
 	public bool is_called_once { get; set; }
-	public bool is_anonymous { get; private set; }
 
 	DelegateTargetField? target_field;
 	DelegateDestroyField? destroy_field;
 
-	/*
-	 * TODO: Something weird is going on here... Without this variable `symbol`
-	 * (and hence `delegate_symbol`) suddenly change type from ValaDelegate to ValaLocalVariable.
-	 * Maybe the symbol of type ValaDelegate is discarded because of its weak reference and
-	 * memory for a new one of type ValaLocalVariable is allocated at the exact same address?
-	 */
-	Delegate delegate_symbol_ref;
-
-	public DelegateType.anonymous (Delegate delegate_symbol) {
-		if (delegate_symbol!= null) {
-			stderr.printf("constr anonymous delegate_symbol name %s, type: %s\n", delegate_symbol.name, Type.from_instance(delegate_symbol).name());
-		}
-		this (delegate_symbol);
-		this.is_anonymous = true;
-	}
-
 	public DelegateType (Delegate delegate_symbol) {
 		base (delegate_symbol);
-		delegate_symbol_ref = delegate_symbol;
 		this.is_called_once = (delegate_symbol.get_attribute_string ("CCode", "scope") == "async");
 	}
 
@@ -106,15 +88,6 @@ public class Vala.DelegateType : CallableType {
 
 	public override bool is_accessible (Symbol sym) {
 		return delegate_symbol.is_accessible (sym);
-	}
-
-
-	public override void accept (CodeVisitor visitor) {
-		base.accept (visitor);
-
-		if (is_anonymous) {
-			delegate_symbol.accept (visitor);
-		}
 	}
 
 	public override bool check (CodeContext context) {
