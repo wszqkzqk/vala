@@ -156,6 +156,7 @@ TESTS = \
 	methods/contains.vala \
 	methods/extern.vala \
 	methods/iterator.vala \
+	methods/parameter-anonymous-delegate.vala \
 	methods/parameter-fixed-array-initializer.vala \
 	methods/parameter-ref-array-resize.vala \
 	methods/parameter-ref-array-resize-captured.vala \
