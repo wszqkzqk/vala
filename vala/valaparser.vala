@@ -477,14 +477,6 @@ public class Vala.Parser : CodeVisitor {
 	DataType parse_type (bool owned_by_default, bool can_weak_ref, bool require_unowned = false, Symbol? parent=null, Method? method=null) throws ParseError {
 		var begin = get_location ();
 
-		// TODO: Can anonymous delegates be unowned or weak?
-		if (accept (TokenType.DELEGATE)) {
-			rollback (begin);
-			return parse_anonymous_delegate (parent, method);
-		} else {
-			rollback (begin);
-		}
-
 		bool is_dynamic = accept (TokenType.DYNAMIC);
 
 		bool value_owned = owned_by_default;
@@ -516,6 +508,16 @@ public class Vala.Parser : CodeVisitor {
 		}
 
 		DataType type;
+
+		var begin2 = get_location ();
+		if (accept (TokenType.DELEGATE)) {
+			rollback (begin2);
+			type = parse_anonymous_delegate (parent, method);
+			type.value_owned = value_owned;
+			return type;
+		} else {
+			rollback (begin2);
+		}
 
 		bool inner_type_owned = true;
 		if (accept (TokenType.OPEN_PARENS)) {
