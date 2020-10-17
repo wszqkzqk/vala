@@ -355,6 +355,9 @@ TESTS = \
 	structs/bug775761.vala \
 	structs/bug777194.vala \
 	structs/bug777194-2.vala \
+	delegates/anonymous.vala \
+	delegates/anonymous-array.vala \
+	delegates/anonymous-type-param.vala \
 	delegates/casting.vala \
 	delegates/compatible.vala \
 	delegates/delegate_only.vala \
