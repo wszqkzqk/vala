@@ -1,0 +1,19 @@
+Invalid Code
+
+/*
+ * 11.18-11.20: error: syntax error, following expression/statement delimiter `)' missing
+ * void f (delegate(int=123) => int y) {
+ *                  ^^^
+ */
+
+void main () {
+    f (t);
+}
+
+void f (delegate(int=123) => int y) {
+    y (1);
+}
+
+int t (int a) {
+    return a;
+}

@@ -3750,13 +3750,6 @@ public class Vala.Parser : CodeVisitor {
 		}
 		expect (TokenType.CLOSE_PARENS);
 
-		DataType error_type = null;
-		if (accept (TokenType.THROWS)) {
-			do {
-				error_type = parse_type (true, false);
-			} while (accept (TokenType.COMMA));
-		}
-
 		expect (TokenType.LAMBDA);
 		var type = parse_type (true, false);
 
@@ -3770,10 +3763,6 @@ public class Vala.Parser : CodeVisitor {
 
 		foreach (var param in param_list) {
 			d.add_parameter (param);
-		}
-
-		if (error_type != null) {
-			d.add_error_type (error_type);
 		}
 
 		parent.add_delegate (d);

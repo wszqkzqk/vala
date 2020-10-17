@@ -358,6 +358,9 @@ TESTS = \
 	delegates/anonymous.vala \
 	delegates/anonymous-array.vala \
 	delegates/anonymous-type-param.vala \
+	delegates/anonymous-throws.test \
+	delegates/anonymous-variadic.test \
+	delegates/anonymous-initializer.test \
 	delegates/casting.vala \
 	delegates/compatible.vala \
 	delegates/delegate_only.vala \
