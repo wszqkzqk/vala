@@ -3701,7 +3701,11 @@ public class Vala.Parser : CodeVisitor {
 	Parameter parse_anonymous_parameter (int id) throws ParseError {
 		var attrs = parse_attributes ();
 		var begin = get_location ();
-		bool params_array = accept (TokenType.PARAMS);
+
+		if (accept (TokenType.PARAMS)) {
+			Report.error (get_last_src (), "Params-arrays not allowed in anonymous delegates");
+		}
+
 		var direction = ParameterDirection.IN;
 		if (accept (TokenType.OUT)) {
 			direction = ParameterDirection.OUT;
@@ -3723,10 +3727,13 @@ public class Vala.Parser : CodeVisitor {
 
 		type = parse_inline_array_type (type);
 
+		if (accept (TokenType.ASSIGN)) {
+			Report.error (get_last_src (), "Optional paramters not allowed in anonymous delegates");
+		}
+
 		var param = new Parameter ("p%i".printf (id), type, get_src (begin));
 		set_attributes (param, attrs);
 		param.direction = direction;
-		param.params_array = params_array;
 		return param;
 	}
 
@@ -3737,7 +3744,6 @@ public class Vala.Parser : CodeVisitor {
 
 		var begin = get_location ();
 		expect (TokenType.DELEGATE);
-		var type_param_list = parse_type_parameter_list ();
 
 		expect (TokenType.OPEN_PARENS);
 		var param_list = new ArrayList<Parameter>();
@@ -3755,11 +3761,7 @@ public class Vala.Parser : CodeVisitor {
 
 		var d = new Delegate ("__delegate%i_".printf (next_anonymous_id++), type, get_src (begin), comment);
 		d.anonymous = true;
-		//FIXME d.access = parent.access;
-
-		foreach (var type_param in type_param_list) {
-			d.add_type_parameter (type_param);
-		}
+		d.access = method.access;
 
 		foreach (var param in param_list) {
 			d.add_parameter (param);
