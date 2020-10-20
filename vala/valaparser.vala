@@ -474,17 +474,13 @@ public class Vala.Parser : CodeVisitor {
 		return result;
 	}
 
-	DataType parse_type_with_parent (bool owned_by_default, bool can_weak_ref, Symbol? parent) throws ParseError {
-		return parse_type(owned_by_default, can_weak_ref, false, parent);
-	}
-
-	DataType parse_type (bool owned_by_default, bool can_weak_ref, bool require_unowned = false, Symbol? parent=null) throws ParseError {
+	DataType parse_type (bool owned_by_default, bool can_weak_ref, bool require_unowned = false, Symbol? parent=null, Method? method=null) throws ParseError {
 		var begin = get_location ();
 
 		// TODO: Can anonymous delegates be unowned or weak?
 		if (accept (TokenType.DELEGATE)) {
 			rollback (begin);
-			return parse_anonymous_delegate (parent);
+			return parse_anonymous_delegate (parent, method);
 		} else {
 			rollback (begin);
 		}
@@ -3006,7 +3002,7 @@ public class Vala.Parser : CodeVisitor {
 		expect (TokenType.OPEN_PARENS);
 		if (current () != TokenType.CLOSE_PARENS) {
 			do {
-				var param = parse_parameter (parent);
+				var param = parse_parameter (parent, method);
 				method.add_parameter (param);
 			} while (accept (TokenType.COMMA));
 		}
@@ -3536,7 +3532,7 @@ public class Vala.Parser : CodeVisitor {
 		}
 	}
 
-	Parameter parse_parameter (Symbol? parent=null) throws ParseError {
+	Parameter parse_parameter (Symbol? parent=null, Method? method=null) throws ParseError {
 		var attrs = parse_attributes ();
 		var begin = get_location ();
 		if (accept (TokenType.ELLIPSIS)) {
@@ -3554,13 +3550,13 @@ public class Vala.Parser : CodeVisitor {
 		DataType type;
 		if (direction == ParameterDirection.IN) {
 			// in parameters are unowned by default
-			type = parse_type_with_parent (false, false, parent);
+			type = parse_type (false, false, false, parent, method);
 		} else if (direction == ParameterDirection.REF) {
 			// ref parameters own the value by default
-			type = parse_type_with_parent (true, true, parent);
+			type = parse_type (true, true, false, parent, method);
 		} else {
 			// out parameters own the value by default
-			type = parse_type_with_parent (true, false, parent);
+			type = parse_type (true, false, false, parent, method);
 		}
 		string id = parse_identifier ();
 
@@ -3737,11 +3733,7 @@ public class Vala.Parser : CodeVisitor {
 		return param;
 	}
 
-	DelegateType parse_anonymous_delegate (Symbol? parent) throws ParseError { //(Symbol parent, List<Attribute>? attrs) throws ParseError {
-		if (parent == null) {
-			throw new ParseError.SYNTAX ("anonymous delegate: parent==null");
-		}
-
+	DelegateType parse_anonymous_delegate (Symbol parent, Method method) throws ParseError {
 		var begin = get_location ();
 		expect (TokenType.DELEGATE);
 
