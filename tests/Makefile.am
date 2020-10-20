@@ -357,10 +357,12 @@ TESTS = \
 	structs/bug777194-2.vala \
 	delegates/anonymous.vala \
 	delegates/anonymous-array.vala \
-	delegates/anonymous-type-param.vala \
+	delegates/anonymous-generics.test \
+	delegates/anonymous-optional-param.test \
+	delegates/anonymous-params.test \
 	delegates/anonymous-throws.test \
+	delegates/anonymous-type-param.vala \
 	delegates/anonymous-variadic.test \
-	delegates/anonymous-initializer.test \
 	delegates/casting.vala \
 	delegates/compatible.vala \
 	delegates/delegate_only.vala \
