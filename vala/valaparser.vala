@@ -3751,6 +3751,11 @@ public class Vala.Parser : CodeVisitor {
 		expect (TokenType.LAMBDA);
 		var type = parse_type (true, false);
 
+		var src = get_src (begin);
+		if (!context.experimental) {
+			Report.warning (src, "Anonymous delegates are experimental");
+		}
+
 		var d = new Delegate ("__delegate%i_".printf (next_anonymous_id++), type, get_src (begin), comment);
 		d.anonymous = true;
 		d.access = method.access;
