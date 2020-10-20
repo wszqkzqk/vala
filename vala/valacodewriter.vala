@@ -717,7 +717,6 @@ public class Vala.CodeWriter : CodeVisitor {
 			return;
 		}
 			
-
 		if (context.vapi_comments && cb.comment != null) {
 			write_comment (cb.comment);
 		}
@@ -1612,17 +1611,12 @@ public class Vala.CodeWriter : CodeVisitor {
 			// TODO: Parameter attributes?
 			write_attributes (param);
 
-			if (param.params_array) {
-				write_string ("params ");
-			}
-
 			if (param.direction == ParameterDirection.REF) {
 				write_string ("ref ");
 			} else if (param.direction == ParameterDirection.OUT) {
 				write_string ("out ");
 			}
 
-			// TODO: Array type?
 			write_type (param.variable_type);
 			write_type_suffix (param.variable_type);
 
@@ -1637,7 +1631,7 @@ public class Vala.CodeWriter : CodeVisitor {
 		// TODO: What about attributes?
 		//write_attributes (cb);
 
-		write_string ("delegate(");
+		write_string ("delegate");
 		write_anonymous_params (cb.get_parameters ());
 
 		write_string (" => ");
