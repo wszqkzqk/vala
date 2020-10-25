@@ -3550,16 +3550,27 @@ public class Vala.Parser : CodeVisitor {
 		}
 
 		DataType type;
+		string pretty_direction = null;
 		if (direction == ParameterDirection.IN) {
 			// in parameters are unowned by default
 			type = parse_type (false, false, false, parent, method);
 		} else if (direction == ParameterDirection.REF) {
 			// ref parameters own the value by default
 			type = parse_type (true, true, false, parent, method);
+			pretty_direction = "ref";
 		} else {
 			// out parameters own the value by default
 			type = parse_type (true, false, false, parent, method);
+			pretty_direction = "out";
 		}
+
+		var possibly_delegate = type as DelegateType;
+		if (possibly_delegate != null 
+				&& possibly_delegate.delegate_symbol.anonymous 
+				&& pretty_direction != null) {
+			Report.error (get_src (begin), "Anonymous delegates cannot be `" + pretty_direction + "` parameters");
+		}
+
 		string id = parse_identifier ();
 
 		type = parse_inline_array_type (type);

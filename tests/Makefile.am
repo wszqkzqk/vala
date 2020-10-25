@@ -359,8 +359,11 @@ TESTS = \
 	delegates/anonymous.vala \
 	delegates/anonymous-array.vala \
 	delegates/anonymous-generics.test \
+	delegates/anonymous-inner-ref-out.vala \
 	delegates/anonymous-optional-param.test \
+	delegates/anonymous-out.test \
 	delegates/anonymous-params.test \
+	delegates/anonymous-ref.test \
 	delegates/anonymous-throws.test \
 	delegates/anonymous-type-param.vala \
 	delegates/anonymous-variadic.test \
