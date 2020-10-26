@@ -360,6 +360,7 @@ TESTS = \
 	delegates/anonymous-array.vala \
 	delegates/anonymous-generics.test \
 	delegates/anonymous-inner-ref-out.vala \
+	delegates/anonymous-inner-owned-unowned.vala \
 	delegates/anonymous-optional-param.test \
 	delegates/anonymous-out.test \
 	delegates/anonymous-params.test \
