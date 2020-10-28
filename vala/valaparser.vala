@@ -3723,6 +3723,7 @@ public class Vala.Parser : CodeVisitor {
 		}
 
 		DataType type;
+		var type_loc = get_location ();
 		if (direction == ParameterDirection.IN) {
 			// in parameters are unowned by default
 			type = parse_type (false, false);
@@ -3732,6 +3733,10 @@ public class Vala.Parser : CodeVisitor {
 		} else {
 			// out parameters own the value by default
 			type = parse_type (true, false);
+		}
+
+		if (type.is_dynamic) {
+			Report.error (get_src (type_loc), "Dynamic types not allowed in anonymous delegates");
 		}
 
 		type = parse_inline_array_type (type);
@@ -3762,7 +3767,12 @@ public class Vala.Parser : CodeVisitor {
 		expect (TokenType.CLOSE_PARENS);
 
 		expect (TokenType.LAMBDA);
+		var type_loc = get_location ();
 		var type = parse_type (true, false);
+
+		if (type.is_dynamic) {
+			Report.error (get_src (type_loc), "Dynamic types not allowed in anonymous delegates");
+		}
 
 		var src = get_src (begin);
 		if (!context.experimental) {
