@@ -3765,7 +3765,7 @@ public class Vala.Parser : CodeVisitor {
 		expect (TokenType.DELEGATE);
 
 		expect (TokenType.OPEN_PARENS);
-		var param_list = new ArrayList<Parameter>();
+		var param_list = new ArrayList<Parameter> ();
 		if (current () != TokenType.CLOSE_PARENS) {
 			int next_parameter_id = 0;
 			do {

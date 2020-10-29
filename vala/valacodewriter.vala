@@ -716,7 +716,7 @@ public class Vala.CodeWriter : CodeVisitor {
 		if (cb.anonymous) {
 			return;
 		}
-			
+		
 		if (context.vapi_comments && cb.comment != null) {
 			write_comment (cb.comment);
 		}

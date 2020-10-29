@@ -1,14 +1,14 @@
-void main() {
-    f(t);
+void main () {
+    f (t);
 }
 
-string t(Comp<string> a, Comp<string> b) {
-    return a.a+b.a;
+string t (Comp<string> a, Comp<string> b) {
+    return a.a + b.a;
 }
 
 
-void f(delegate(Comp<string>, Comp<string>) => string abc) {
-    assert (abc(new Comp<string>("x"), new Comp<string>("y")) == "xy");
+void f (delegate(Comp<string>, Comp<string>) => string abc) {
+    assert (abc(new Comp<string> ("x"), new Comp<string> ("y")) == "xy");
 }
 
 class Comp<A> {

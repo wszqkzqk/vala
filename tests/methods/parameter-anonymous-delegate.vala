@@ -14,7 +14,7 @@ void manam ([CCode (has_target = false)] delegate(int, int) => int p, int r) {
 	assert (p (23, 42) == r);
 }
 
-void main() {
+void main () {
 	foo (func, 65);
 	bar (65, func);
 	manam (func, 65);

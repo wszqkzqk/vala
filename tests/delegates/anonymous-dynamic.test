@@ -1,12 +1,12 @@
 Invalid Code
 
 /*
- * 9.8-9.32: error: Anonymous delegates cannot be dynamic types
- * void p(dynamic delegate() => int d) {
- *        ^^^^^^^^^^^^^^^^^^^^^^^^^
+ * 9.9-9.33: error: Anonymous delegates cannot be dynamic types
+ * void p (dynamic delegate() => int d) {
+ *         ^^^^^^^^^^^^^^^^^^^^^^^^^
  */
 
-void p(dynamic delegate() => int d) {
+void p (dynamic delegate() => int d) {
     d ();
 }
 

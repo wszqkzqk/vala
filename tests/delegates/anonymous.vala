@@ -1,6 +1,6 @@
 void main () {
-    f((a, b) => {
-        return a+b;
+    f ((a, b) => {
+        return a + b;
     });
 }
 
