@@ -514,6 +514,7 @@ public class Vala.Parser : CodeVisitor {
 			rollback (begin2);
 			type = parse_anonymous_delegate (parent, method);
 			type.value_owned = value_owned;
+			type.is_dynamic = is_dynamic;
 			return type;
 		} else {
 			rollback (begin2);
@@ -3565,10 +3566,18 @@ public class Vala.Parser : CodeVisitor {
 		}
 
 		var possibly_delegate = type as DelegateType;
-		if (possibly_delegate != null 
-				&& possibly_delegate.delegate_symbol.anonymous 
-				&& pretty_direction != null) {
-			Report.error (get_src (begin), "Anonymous delegates cannot be `" + pretty_direction + "` parameters");
+		if (possibly_delegate != null && possibly_delegate.delegate_symbol.anonymous) {
+			if (pretty_direction != null) {
+				Report.error (get_src (begin), "Anonymous delegates cannot be `" + pretty_direction + "` parameters");
+			}
+
+			if (possibly_delegate.is_dynamic) {
+				Report.error (get_src (begin), "Anonymous delegates cannot be dynamic types");
+			}
+
+			if (params_array) {
+				Report.error (get_src (begin), "Anonymous delegates cannot be param-arrays");
+			}
 		}
 
 		string id = parse_identifier ();

@@ -358,9 +358,11 @@ TESTS = \
 	structs/bug777194-2.vala \
 	delegates/anonymous.vala \
 	delegates/anonymous-array.vala \
+	delegates/anonymous-dynamic.test \
 	delegates/anonymous-generics.test \
 	delegates/anonymous-inner-dynamic-param.test \
 	delegates/anonymous-inner-dynamic-return.test \
+	delegates/anonymous-inner-params.test \
 	delegates/anonymous-inner-ref-out.vala \
 	delegates/anonymous-inner-owned-unowned.vala \
 	delegates/anonymous-optional-param.test \
