@@ -3536,6 +3536,7 @@ public class Vala.Parser : CodeVisitor {
 	}
 
 	Parameter parse_parameter (Symbol? parent=null, Method? method=null) throws ParseError {
+		var begin_attrs = get_location ();
 		var attrs = parse_attributes ();
 		var begin = get_location ();
 		if (accept (TokenType.ELLIPSIS)) {
@@ -3565,8 +3566,18 @@ public class Vala.Parser : CodeVisitor {
 			pretty_direction = "out";
 		}
 
+		string id = parse_identifier ();
+
 		var possibly_delegate = type as DelegateType;
 		if (possibly_delegate != null && possibly_delegate.delegate_symbol.anonymous) {
+			if (attrs != null) {
+				var here = get_location ();
+				rollback (begin);
+				Report.warning (get_src (begin_attrs), "Ambiguous attribute: does it belong to `%s` or parameter `%s`?"
+					.printf (possibly_delegate.to_prototype_string (), id));
+				rollback (here);
+			}
+
 			if (pretty_direction != null) {
 				Report.error (get_src (begin), "Anonymous delegates cannot be `" + pretty_direction + "` parameters");
 			}
@@ -3579,8 +3590,6 @@ public class Vala.Parser : CodeVisitor {
 				Report.error (get_src (begin), "Anonymous delegates cannot be param-arrays");
 			}
 		}
-
-		string id = parse_identifier ();
 
 		type = parse_inline_array_type (type);
 
