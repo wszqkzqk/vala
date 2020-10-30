@@ -368,6 +368,7 @@ TESTS = \
 	delegates/anonymous-optional-param.test \
 	delegates/anonymous-out.test \
 	delegates/anonymous-params.test \
+	delegates/anonymous-param-attrs.vala \
 	delegates/anonymous-ref.test \
 	delegates/anonymous-throws.test \
 	delegates/anonymous-type-param.vala \
