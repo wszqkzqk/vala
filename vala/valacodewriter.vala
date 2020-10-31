@@ -1608,7 +1608,6 @@ public class Vala.CodeWriter : CodeVisitor {
 				write_string (", ");
 			}
 
-			// TODO: Parameter attributes?
 			write_attributes (param);
 
 			if (param.direction == ParameterDirection.REF) {
@@ -1628,8 +1627,7 @@ public class Vala.CodeWriter : CodeVisitor {
 	}
 
 	private void write_anonymous_delegate (DelegateType cb) {
-		// TODO: What about attributes?
-		//write_attributes (cb);
+		write_attributes (cb);
 
 		write_string ("delegate");
 		write_anonymous_params (cb.get_parameters ());
