@@ -371,6 +371,7 @@ TESTS = \
 	delegates/anonymous-params.test \
 	delegates/anonymous-param-attrs.vala \
 	delegates/anonymous-ref.test \
+	delegates/anonymous-return-anonymous.test \
 	delegates/anonymous-throws.test \
 	delegates/anonymous-type-param.vala \
 	delegates/anonymous-variadic.test \

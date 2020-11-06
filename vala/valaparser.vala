@@ -509,15 +509,17 @@ public class Vala.Parser : CodeVisitor {
 
 		DataType type;
 
-		var begin2 = get_location ();
-		if (accept (TokenType.DELEGATE)) {
-			rollback (begin2);
+		var begin_delegate_token = get_location ();
+		var is_delegate_token = accept (TokenType.DELEGATE);
+		rollback (begin_delegate_token);
+
+		if (is_delegate_token && method == null) {
+			throw new ParseError.SYNTAX ("anonymous delegate not allowed here");
+		} else if (is_delegate_token) {
 			type = parse_anonymous_delegate (parent, method);
 			type.value_owned = value_owned;
 			type.is_dynamic = is_dynamic;
 			return type;
-		} else {
-			rollback (begin2);
 		}
 
 		bool inner_type_owned = true;
