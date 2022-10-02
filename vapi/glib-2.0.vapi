@@ -5203,6 +5203,14 @@ namespace GLib {
 			return (List<G>?) this == null;
 		}
 
+		[DestroysInstance]
+		[CCode (cname = "vala_g_list_clear")]
+		public void clear () {
+			List* pl = this;
+			List<G> l = (owned) pl;
+			(void*) l;
+		}
+
 		public G data;
 		public List<G> next;
 		public unowned List<G> prev;
@@ -5296,6 +5304,14 @@ namespace GLib {
 		[CCode (cname = "vala_g_slist_is_empty")]
 		public inline bool is_empty () {
 			return (SList<G>?) this == null;
+		}
+
+		[DestroysInstance]
+		[CCode (cname = "vala_g_slist_clear")]
+		public void clear () {
+			SList* pl = this;
+			SList<G> l = (owned) pl;
+			(void*) l;
 		}
 
 		public G data;
