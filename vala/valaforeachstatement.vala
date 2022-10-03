@@ -194,6 +194,12 @@ public class Vala.ForeachStatement : Block {
 			return check_without_iterator (context, collection_type, collection_type.get_type_arguments ().get (0));
 		} else if (context.profile == Profile.GOBJECT && collection_type.compatible (context.analyzer.gvaluearray_type)) {
 			return check_without_iterator (context, collection_type, context.analyzer.gvalue_type);
+		} if (context.profile == Profile.GOBJECT && collection_type.compatible (context.analyzer.ghash_table_type)) {
+			if (collection_type.get_type_arguments ().size != 2) {
+				error = true;
+				Report.error (collection.source_reference, "missing type argument for collection");
+				return false;
+			}
 		} else {
 			return check_with_iterator (context, collection_type);
 		}

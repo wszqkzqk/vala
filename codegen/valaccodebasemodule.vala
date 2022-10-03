@@ -341,6 +341,7 @@ public abstract class Vala.CCodeBaseModule : CodeGenerator {
 	public TypeSymbol genericarray_type;
 	public Class gsequence_type;
 	public Class gsequence_iter_type;
+	public Class ghash_table_type;
 	public TypeSymbol gthreadpool_type;
 	public DataType gquark_type;
 	public Struct gvalue_type;
@@ -527,6 +528,7 @@ public abstract class Vala.CCodeBaseModule : CodeGenerator {
 			genericarray_type = (TypeSymbol) glib_ns.scope.lookup ("GenericArray");
 			gsequence_type = (Class) glib_ns.scope.lookup ("Sequence");
 			gsequence_iter_type = (Class) glib_ns.scope.lookup ("SequenceIter");
+			ghash_table_type = (Class) glib_ns.scope.lookup ("HashTable");
 			gthreadpool_type = (TypeSymbol) glib_ns.scope.lookup ("ThreadPool");
 
 			gerror = (Class) root_symbol.scope.lookup ("GLib").scope.lookup ("Error");

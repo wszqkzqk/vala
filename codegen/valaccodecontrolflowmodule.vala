@@ -442,6 +442,38 @@ public abstract class Vala.CCodeControlFlowModule : CCodeMethodModule {
 			stmt.body.emit (this);
 
 			ccode.close ();
+		} else if (stmt.collection.value_type.compatible (new ObjectType (ghash_table_type))) {
+			// iterating over a GHashTable
+
+			var iterator_variable = new LocalVariable (collection_type.copy (), stmt.variable_name + "_it");
+			visit_local_variable (iterator_variable);
+			var it_name = get_local_cname (iterator_variable);
+
+			var ccond = new CCodeBinaryExpression (CCodeBinaryOperator.INEQUALITY, get_variable_cexpression (it_name), new CCodeConstant ("NULL"));
+
+			ccode.open_for (new CCodeAssignment (get_variable_cexpression (it_name), get_variable_cexpression (get_local_cname (collection_backup))),
+							ccond,
+							new CCodeAssignment (get_variable_cexpression (it_name), new CCodeMemberAccess.pointer (get_variable_cexpression (it_name), "next")));
+
+			CCodeExpression element_expr = new CCodeMemberAccess.pointer (get_variable_cexpression (it_name), "data");
+
+			if (collection_type.get_type_arguments ().size != 1) {
+				Report.error (stmt.source_reference, "internal error: missing generic type argument");
+				stmt.error = true;
+				return;
+			}
+
+			var element_data_type = collection_type.get_type_arguments ().get (0).copy ();
+			element_data_type.value_owned = false;
+			element_expr = convert_from_generic_pointer (element_expr, element_data_type);
+			element_expr = get_cvalue_ (transform_value (new GLibValue (element_data_type, element_expr), stmt.type_reference, stmt));
+
+			visit_local_variable (stmt.element_variable);
+			ccode.add_assignment (get_variable_cexpression (get_local_cname (stmt.element_variable)), element_expr);
+
+			stmt.body.emit (this);
+
+			ccode.close ();
 		} else {
 			Report.error (stmt.source_reference, "internal error: unsupported collection type");
 			stmt.error = true;
