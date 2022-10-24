@@ -66,6 +66,10 @@ public class Vala.IntegerLiteral : Literal {
 
 		checked = true;
 
+		// Support the underscore symbol separates digits in number values
+		string[] components = value.split ("_");
+		value = string.joinv("", components);
+
 		int l = 0;
 		while (value.has_suffix ("l") || value.has_suffix ("L")) {
 			l++;
