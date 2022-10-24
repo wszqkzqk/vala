@@ -974,8 +974,19 @@ public class Vala.Genie.Scanner {
 				type = TokenType.IDENTIFIER;
 			}
 		} else if (current[0].isdigit ()) {
-			while (current < end && current[0].isdigit ()) {
-				current++;
+			while (current < end) {
+				if (current[0].isxdigit ()) {
+					current += 1;
+				} else if (current[0] == '_') {
+					// Support the underscore symbol separates digits in number values
+					current += 1;
+					if ((current >= end) || (!(current[0].isxdigit ()))) {
+						current -= 1;
+						break;
+					}
+				} else {
+					break;
+				}
 			}
 			type = TokenType.INTEGER_LITERAL;
 			if (current < end && current[0].tolower () == 'l') {
@@ -993,16 +1004,38 @@ public class Vala.Genie.Scanner {
 				}
 			} else if (current < end - 1 && current[0] == '.' && current[1].isdigit ()) {
 				current++;
-				while (current < end && current[0].isdigit ()) {
-					current++;
+				while (current < end) {
+					if (current[0].isxdigit ()) {
+						current += 1;
+					} else if (current[0] == '_') {
+						// Support the underscore symbol separates digits in number values
+						current += 1;
+						if ((current >= end) || (!(current[0].isxdigit ()))) {
+							current -= 1;
+							break;
+						}
+					} else {
+						break;
+					}
 				}
 				if (current < end && current[0].tolower () == 'e') {
 					current++;
 					if (current < end && (current[0] == '+' || current[0] == '-')) {
 						current++;
 					}
-					while (current < end && current[0].isdigit ()) {
-						current++;
+					while (current < end) {
+						if (current[0].isxdigit ()) {
+							current += 1;
+						} else if (current[0] == '_') {
+							// Support the underscore symbol separates digits in number values
+							current += 1;
+							if ((current >= end) || (!(current[0].isxdigit ()))) {
+								current -= 1;
+								break;
+							}
+						} else {
+							break;
+						}
 					}
 				}
 				if (current < end && current[0].tolower () == 'f') {
