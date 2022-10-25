@@ -659,12 +659,24 @@ public class Vala.Scanner {
 		}
 
 		// exponent part
-		if (current < end && current[0].tolower () == 'e') {
-			type = TokenType.REAL_LITERAL;
+		if ((current < end - 1) && (current[0].tolower () == 'e')) {
 			current++;
-			if (current < end && (current[0] == '+' || current[0] == '-')) {
-				current++;
+			if (current[0] == '+' || current[0] == '-') {
+				if (current < end - 1) {
+					current++;
+				} else {
+					// There is no digits after 'e', revert
+					current--;
+				}
+			} else if (!(current[0].isdigit ())) {
+				// There is no digits after 'e', revert
+				current--;
 			}
+
+			if (current[0].isdigit ()) {
+				type = TokenType.REAL_LITERAL;
+			}
+
 			while (current < end) {
 				if (current[0].isdigit ()) {
 					current++;
