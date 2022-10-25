@@ -64,6 +64,10 @@ public class Vala.RealLiteral : Literal {
 
 		checked = true;
 
+		// Support the underscore symbol separates digits in number values
+		string[] components = value.split ("_");
+		value = string.joinv("", components);
+
 		string type_name;
 		if (value.has_suffix ("f") || value.has_suffix ("F")) {
 			type_name ="float";

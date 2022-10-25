@@ -606,13 +606,35 @@ public class Vala.Scanner {
 		    && current[1] == 'x' && current[2].isxdigit ()) {
 			// hexadecimal integer literal
 			current += 2;
-			while (current < end && current[0].isxdigit ()) {
-				current++;
+			while (current < end) {
+				if (current[0].isxdigit ()) {
+					current++;
+				} else if (current[0] == '_') {
+					// Support the underscore symbol separates digits in number values
+					current++;
+					if ((current >= end) || (!(current[0].isxdigit ()))) {
+						current--;
+						break;
+					}
+				} else {
+					break;
+				}
 			}
 		} else {
 			// decimal number
-			while (current < end && current[0].isdigit ()) {
-				current++;
+			while (current < end) {
+				if (current[0].isdigit ()) {
+					current++;
+				} else if (current[0] == '_') {
+					// Support the underscore symbol separates digits in number values
+					current++;
+					if ((current >= end) || (!(current[0].isdigit ()))) {
+						current--;
+						break;
+					}
+				} else {
+					break;
+				}
 			}
 		}
 
@@ -620,8 +642,19 @@ public class Vala.Scanner {
 		if (current < end - 1 && current[0] == '.' && current[1].isdigit ()) {
 			type = TokenType.REAL_LITERAL;
 			current++;
-			while (current < end && current[0].isdigit ()) {
-				current++;
+			while (current < end) {
+				if (current[0].isdigit ()) {
+					current++;
+				} else if (current[0] == '_') {
+					// Support the underscore symbol separates digits in number values
+					current++;
+					if ((current >= end) || (!(current[0].isdigit ()))) {
+						current--;
+						break;
+					}
+				} else {
+					break;
+				}
 			}
 		}
 
@@ -632,8 +665,19 @@ public class Vala.Scanner {
 			if (current < end && (current[0] == '+' || current[0] == '-')) {
 				current++;
 			}
-			while (current < end && current[0].isdigit ()) {
-				current++;
+			while (current < end) {
+				if (current[0].isdigit ()) {
+					current++;
+				} else if (current[0] == '_') {
+					// Support the underscore symbol separates digits in number values
+					current++;
+					if ((current >= end) || (!(current[0].isdigit ()))) {
+						current--;
+						break;
+					}
+				} else {
+					break;
+				}
 			}
 		}
 
