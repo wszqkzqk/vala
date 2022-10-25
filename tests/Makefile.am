@@ -890,6 +890,10 @@ TESTS = \
 	annotations/description.vala \
 	annotations/noaccessormethod.test \
 	scanner/comment-not-closed.test \
+	scanner/number_underscore_separated.vala \
+	scanner/number_underscore_separated_invalid.test \
+	scanner/number_underscore_separated_invalid2.test \
+	scanner/number_underscore_separated_invalid3.test \
 	scanner/preprocessor-invalid.test \
 	scanner/preprocessor-missing-paren.test \
 	scanner/preprocessor-unexpected.test \
