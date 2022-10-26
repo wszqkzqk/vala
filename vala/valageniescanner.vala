@@ -977,13 +977,9 @@ public class Vala.Genie.Scanner {
 			while (current < end) {
 				if (current[0].isdigit ()) {
 					current++;
-				} else if (current[0] == '_') {
+				} else if (current[0] == '_' && current < end -1 && current[1].isdigit ()) {
 					// Support the underscore symbol separates digits in number values
 					current++;
-					if ((current >= end) || (!(current[0].isdigit ()))) {
-						current--;
-						break;
-					}
 				} else {
 					break;
 				}
@@ -1007,13 +1003,9 @@ public class Vala.Genie.Scanner {
 				while (current < end) {
 					if (current[0].isdigit ()) {
 						current++;
-					} else if (current[0] == '_') {
+					} else if (current[0] == '_' && current < end -1 && current[1].isdigit ()) {
 						// Support the underscore symbol separates digits in number values
 						current++;
-						if ((current >= end) || (!(current[0].isdigit ()))) {
-							current--;
-							break;
-						}
 					} else {
 						break;
 					}
@@ -1026,13 +1018,9 @@ public class Vala.Genie.Scanner {
 					while (current < end) {
 						if (current[0].isdigit ()) {
 							current++;
-						} else if (current[0] == '_') {
+						} else if (current[0] == '_' && current < end -1 && current[1].isdigit ()) {
 							// Support the underscore symbol separates digits in number values
 							current++;
-							if ((current >= end) || (!(current[0].isdigit ()))) {
-								current--;
-								break;
-							}
 						} else {
 							break;
 						}
@@ -1049,13 +1037,9 @@ public class Vala.Genie.Scanner {
 				while (current < end) {
 					if (current[0].isxdigit ()) {
 						current++;
-					} else if (current[0] == '_') {
+					} else if (current[0] == '_' && current < end -1 && current[1].isxdigit ()) {
 						// Support the underscore symbol separates digits in number values
 						current++;
-						if ((current >= end) || (!(current[0].isxdigit ()))) {
-							current--;
-							break;
-						}
 					} else {
 						break;
 					}
