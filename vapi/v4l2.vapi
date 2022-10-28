@@ -559,8 +559,8 @@ namespace V4l2
 		NTSC,
 		SECAM_DK,
 		SECAM,
-		525_60,
-		625_50,
+		@525_60,
+		@625_50,
 		ATSC,
 		UNKNOWN,
 		ALL
