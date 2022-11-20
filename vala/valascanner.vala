@@ -607,18 +607,19 @@ public class Vala.Scanner {
 		var type = TokenType.INTEGER_LITERAL;
 
 		// integer part
-		if (current < end - 2 && current[0] == '0'
-		    && current[1] == 'x' && current[2].isxdigit ()) {
-			// hexadecimal integer literal
-			current += 2;
-			while (current < end) {
-				if (current[0].isxdigit ()) {
+		if (current < end - 2 && current[0] == '0') {
+			if (current[1] == 'x' && current[2].isxdigit ()) {
+				// hexadecimal integer literal
+				current += 2;
+				while (current < end && current[0].isxdigit ()) {
 					current++;
-				} else if (current[0] == '_' && current < end -1 && current[1].isxdigit ()) {
-					// Support the underscore symbol separates digits in number values
+				}
+			} else if ((current[1] == 'b' || current[1] == 'o')
+			&& current[2].isdigit ()) {
+				// binary integer literal or octal integer literal
+				current += 2;
+				while (current < end && current[0].isdigit ()) {
 					current++;
-				} else {
-					break;
 				}
 			}
 		} else {

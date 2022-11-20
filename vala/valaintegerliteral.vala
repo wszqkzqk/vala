@@ -82,7 +82,51 @@ public class Vala.IntegerLiteral : Literal {
 			value = value.substring (0, value.length - 1);
 		}
 
-		int64 n = int64.parse (value);
+		int64 n;
+		if (value.has_prefix ("0b")) {
+			uint64 m = 0;
+			string v = value.substring (2, value.length);
+			for (long i = v.length - 1; i > 0; i -= 1) {
+				if (v[i] == '1') {
+					if (v.length - 1 - i >= 64) {
+						Report.warning (source_reference, "integer constant is too large");
+						m = uint64.MAX;
+						break;
+					}
+					m += (1 << (v.length - 1 - i));
+				} else if (v[i] != '0') {
+					Report.error (source_reference, "invalid digit '%c' in binary literal".printf (v[i]));
+					error = true;
+					break;
+				}
+			}
+			value = m.to_string ();
+			n = (int64) m;
+		} else if (value.has_prefix ("0o")) {
+			uint64 m = 0;
+			string v = value.substring (2, value.length);
+			for (long i = v.length - 1; i > 0; i -= 1) {
+				if (v[i].isdigit () && v[i] != '8' && v[i] != '9') {
+					int num = v[i].digit_value ();
+					if ((num == 1 && ((v.length - 1 - i) * 3 >= 64))
+					|| (1 < num < 4 && ((v.length - 1 - i) * 3 + 1 >= 64))
+					|| (num >= 4 && ((v.length - 1 - i) * 3 + 2 >= 64))) {
+						Report.warning (source_reference, "integer constant is too large");
+						m = uint64.MAX;
+						break;
+					}
+					m += (num << ((v.length - 1 - i) * 3));
+				} else {
+					Report.error (source_reference, "invalid digit '%c' in binary literal".printf (v[i]));
+					error = true;
+					break;
+				}
+			}
+			value = m.to_string ();
+			n = (int64) m;
+		} else {
+			n = int64.parse (value);
+		}
 		if (!u && (n > int.MAX || n < int.MIN)) {
 			// value doesn't fit into signed 32-bit
 			l = 2;
