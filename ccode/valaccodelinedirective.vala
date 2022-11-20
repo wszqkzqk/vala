@@ -37,7 +37,13 @@ public class Vala.CCodeLineDirective : CCodeNode {
 	public int line_number { get; set; }
 
 	public CCodeLineDirective (string _filename, int _line) {
-		filename = _filename;
+		if (Path.DIR_SEPARATOR == '/') {
+			string[] components = _filename.split ("""\""");
+			filename = string.joinv ("""\\""", components);
+		}
+		else {
+			filename = _filename;
+		}
 		line_number = _line;
 	}
 
