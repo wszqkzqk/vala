@@ -999,8 +999,15 @@ public class Vala.Genie.Scanner {
 				type = TokenType.IDENTIFIER;
 			}
 		} else if (current[0].isdigit ()) {
-			while (current < end && current[0].isdigit ()) {
-				current++;
+			while (current < end) {
+				if (current[0].isdigit ()) {
+					current++;
+				} else if (current[0] == '_' && current < end -1 && current[1].isdigit ()) {
+					// Support the underscore symbol separates digits in number values
+					current++;
+				} else {
+					break;
+				}
 			}
 			type = TokenType.INTEGER_LITERAL;
 			if (current < end && current[0].tolower () == 'l') {
@@ -1018,16 +1025,30 @@ public class Vala.Genie.Scanner {
 				}
 			} else if (current < end - 1 && current[0] == '.' && current[1].isdigit ()) {
 				current++;
-				while (current < end && current[0].isdigit ()) {
-					current++;
+				while (current < end) {
+					if (current[0].isdigit ()) {
+						current++;
+					} else if (current[0] == '_' && current < end -1 && current[1].isdigit ()) {
+						// Support the underscore symbol separates digits in number values
+						current++;
+					} else {
+						break;
+					}
 				}
 				if (current < end && current[0].tolower () == 'e') {
 					current++;
 					if (current < end && (current[0] == '+' || current[0] == '-')) {
 						current++;
 					}
-					while (current < end && current[0].isdigit ()) {
-						current++;
+					while (current < end) {
+						if (current[0].isdigit ()) {
+							current++;
+						} else if (current[0] == '_' && current < end -1 && current[1].isdigit ()) {
+							// Support the underscore symbol separates digits in number values
+							current++;
+						} else {
+							break;
+						}
 					}
 				}
 				if (current < end && current[0].tolower () == 'f') {
@@ -1038,8 +1059,15 @@ public class Vala.Genie.Scanner {
 					   && begin[0] == '0' && begin[1] == 'x' && begin[2].isxdigit ()) {
 				// hexadecimal integer literal
 				current++;
-				while (current < end && current[0].isxdigit ()) {
-					current++;
+				while (current < end) {
+					if (current[0].isxdigit ()) {
+						current++;
+					} else if (current[0] == '_' && current < end -1 && current[1].isxdigit ()) {
+						// Support the underscore symbol separates digits in number values
+						current++;
+					} else {
+						break;
+					}
 				}
 			} else if (current < end && is_ident_char (current[0])) {
 				// allow identifiers to start with a digit
